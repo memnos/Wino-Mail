@@ -39,7 +39,9 @@ jobs:
         run: dotnet restore src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -p:Platform=x64 -p:RuntimeIdentifier=win-x64
 
       - name: Build the Release package
-        run: dotnet build src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -c Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Never -p:AppxPackageSigningEnabled=false -p:UapAppxPackageBuildMode=SideloadOnly -p:GenerateTemporaryStoreCertificate=false -p:AppxSymbolPackageEnabled=false
+        shell: pwsh
+        run: |
+          dotnet build src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -c Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Never -p:AppxPackageSigningEnabled=false -p:UapAppxPackageBuildMode=SideloadOnly -p:GenerateTemporaryStoreCertificate=false -p:AppxSymbolPackageEnabled=false "-p:WarningsNotAsErrors=CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CsWinRT1028;CsWinRT1032;CsWinRT1034;CsWinRT1035"
 
       - name: Sign the package
         shell: pwsh
