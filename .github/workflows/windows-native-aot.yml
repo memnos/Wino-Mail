@@ -19,18 +19,21 @@ jobs:
       - name: Give the sideload package its own identity
         shell: pwsh
         run: |
-          $path = "src/Wino.Mail.WinUI/Package.appxmanifest"
-          $text = [IO.File]::ReadAllText($path)
-          $text = $text.Replace('Name="58272BurakKSE.WinoMailPreview"', 'Name="Memnos.WinoMailTemplates"')
-          $text = $text.Replace('Publisher="CN=51FBDAF3-E212-4149-89A2-A2636B3BC911"', 'Publisher="CN=Memnos Wino Mail"')
-          $text = $text.Replace('<DisplayName>Wino Mail</DisplayName>', '<DisplayName>Wino Mail (modelli)</DisplayName>')
-          $text = $text.Replace('<PublisherDisplayName>Burak KÖSE</PublisherDisplayName>', '<PublisherDisplayName>Memnos</PublisherDisplayName>')
-          [IO.File]::WriteAllText($path, $text)
+          $profilePath = "scripts/release/windows/profiles/Sideload.json"
+          Copy-Item $profilePath "src/Wino.Mail.WinUI/release-profile.json" -Force
+          $manifest = "src/Wino.Mail.WinUI/Package.appxmanifest"
+          & scripts/release/windows/WinoPackageProfile.ps1 -ManifestPath $manifest -ProfilePath $profilePath -OutputPath $manifest
+          $text = [IO.File]::ReadAllText($manifest)
+          $text = $text.Replace('Version="2.2.11.0"', 'Version="2.2.12.0"')
+          [IO.File]::WriteAllText($manifest, $text)
+          $publisher = [string]((Get-Content -Raw -Encoding utf8 $profilePath | ConvertFrom-Json).Publisher)
+          [IO.File]::WriteAllText("publisher.txt", $publisher)
 
       - name: Create a sideload certificate
         shell: pwsh
         run: |
-          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=Memnos Wino Mail" -KeyUsage DigitalSignature -FriendlyName "Wino Mail sideload" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
+          $publisher = [IO.File]::ReadAllText("publisher.txt").Trim()
+          $cert = New-SelfSignedCertificate -Type Custom -Subject $publisher -KeyUsage DigitalSignature -FriendlyName "Wino Mail sideload" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
           $password = ConvertTo-SecureString -String "wino-sideload" -Force -AsPlainText
           Export-PfxCertificate -Cert $cert -FilePath wino-sideload.pfx -Password $password | Out-Null
           Export-Certificate -Cert $cert -FilePath wino-sideload.cer | Out-Null
