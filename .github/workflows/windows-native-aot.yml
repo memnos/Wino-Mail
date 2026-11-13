@@ -38,10 +38,22 @@ jobs:
       - name: Restore
         run: dotnet restore src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -p:Platform=x64 -p:RuntimeIdentifier=win-x64
 
-      - name: Build the Release package
+      - name: Keep pre-existing trim warnings from failing the package
         shell: pwsh
         run: |
-          dotnet build src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -c Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Never -p:AppxPackageSigningEnabled=false -p:UapAppxPackageBuildMode=SideloadOnly -p:GenerateTemporaryStoreCertificate=false -p:AppxSymbolPackageEnabled=false "-p:WarningsNotAsErrors=CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CsWinRT1028;CsWinRT1032;CsWinRT1034;CsWinRT1035"
+          $props = [IO.File]::ReadAllText("Directory.Build.props")
+          $addition = @"
+            <PropertyGroup>
+              <WarningsNotAsErrors>`$(WarningsNotAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CsWinRT1028;CsWinRT1032;CsWinRT1034;CsWinRT1035</WarningsNotAsErrors>
+            </PropertyGroup>
+          </Project>
+          "@
+          if ($props -notmatch '</Project>\s*$') { throw "Directory.Build.props has no closing Project tag." }
+          $props = [regex]::Replace($props, '</Project>\s*$', $addition)
+          [IO.File]::WriteAllText("Directory.Build.props", $props)
+
+      - name: Build the Release package
+        run: dotnet build src/Wino.Mail.WinUI/Wino.Mail.WinUI.csproj -c Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Never -p:AppxPackageSigningEnabled=false -p:UapAppxPackageBuildMode=SideloadOnly -p:GenerateTemporaryStoreCertificate=false -p:AppxSymbolPackageEnabled=false
 
       - name: Sign the package
         shell: pwsh
