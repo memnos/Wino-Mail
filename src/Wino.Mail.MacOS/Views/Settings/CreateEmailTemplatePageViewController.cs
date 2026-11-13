@@ -65,6 +65,16 @@ public sealed class CreateEmailTemplatePageViewController(
         WinoAccessibility.Label(descriptionField, Translator.SettingsEmailTemplates_DescriptionTitle);
         var descriptionCard = Add(Card(Translator.SettingsEmailTemplates_DescriptionTitle, Translator.SettingsEmailTemplates_DescriptionDescription, WinoIconGlyph.Note, descriptionField));
 
+        var subjectField = Bind.TextField(vm, nameof(vm.TemplateSubject), s => s.TemplateSubject, (s, v) => s.TemplateSubject = v,
+            Translator.SettingsEmailTemplates_SubjectTitle, FieldWidth);
+        WinoAccessibility.Label(subjectField, Translator.SettingsEmailTemplates_SubjectTitle);
+        Add(Card(Translator.SettingsEmailTemplates_SubjectTitle, string.Empty, WinoIconGlyph.Mail, subjectField));
+
+        var toField = Bind.TextField(vm, nameof(vm.TemplateTo), s => s.TemplateTo, (s, v) => s.TemplateTo = v,
+            Translator.SettingsEmailTemplates_ToPlaceholder, FieldWidth);
+        WinoAccessibility.Label(toField, Translator.SettingsEmailTemplates_ToTitle);
+        Add(Card(Translator.SettingsEmailTemplates_ToTitle, string.Empty, WinoIconGlyph.Person, toField));
+
         // ---- Template content ----
         var contentTitle = WinoStyle.Label(Translator.SettingsEmailTemplates_ContentTitle, WinoSettingsStyle.SectionTitle, WinoStyle.PrimaryText);
         var contentDescription = WinoStyle.Label(Translator.SettingsEmailTemplates_ContentDescription, WinoSettingsStyle.CardDescription, WinoStyle.SecondaryText, 0);

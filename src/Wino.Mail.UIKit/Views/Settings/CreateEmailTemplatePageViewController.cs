@@ -66,6 +66,18 @@ public sealed class CreateEmailTemplatePageViewController(
         Add(StackedCard(Translator.SettingsEmailTemplates_DescriptionTitle, Translator.SettingsEmailTemplates_DescriptionDescription, WinoIconGlyph.Note, descriptionField));
         Bind.OnActivated(nameField, () => descriptionField.BecomeFirstResponder(), UIControlEvent.EditingDidEndOnExit);
 
+        var subjectField = Bind.TextField(vm, nameof(vm.TemplateSubject), s => s.TemplateSubject, (s, v) => s.TemplateSubject = v,
+            Translator.SettingsEmailTemplates_SubjectTitle, 0);
+        WinoAccessibility.Label(subjectField, Translator.SettingsEmailTemplates_SubjectTitle);
+        subjectField.HeightAnchor.ConstraintGreaterThanOrEqualTo((nfloat)WinoStyle.MinimumHitTarget).Active = true;
+        Add(StackedCard(Translator.SettingsEmailTemplates_SubjectTitle, string.Empty, WinoIconGlyph.Mail, subjectField));
+
+        var toField = Bind.TextField(vm, nameof(vm.TemplateTo), s => s.TemplateTo, (s, v) => s.TemplateTo = v,
+            Translator.SettingsEmailTemplates_ToPlaceholder, 0);
+        WinoAccessibility.Label(toField, Translator.SettingsEmailTemplates_ToTitle);
+        toField.HeightAnchor.ConstraintGreaterThanOrEqualTo((nfloat)WinoStyle.MinimumHitTarget).Active = true;
+        Add(StackedCard(Translator.SettingsEmailTemplates_ToTitle, string.Empty, WinoIconGlyph.Person, toField));
+
         // ---- Template content ----
         var contentTitle = WinoStyle.Label(Translator.SettingsEmailTemplates_ContentTitle, WinoSettingsStyle.SectionTitle, WinoStyle.PrimaryText);
         contentTitle.AccessibilityTraits = UIAccessibilityTrait.Header;

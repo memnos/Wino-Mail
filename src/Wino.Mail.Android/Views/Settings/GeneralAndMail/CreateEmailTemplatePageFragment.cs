@@ -86,6 +86,16 @@ public sealed class CreateEmailTemplatePageFragment : SettingsPageFragment<Creat
         if (descriptionLayout.EditText is { } descriptionField) descriptionField.ContentDescription = Translator.SettingsEmailTemplates_DescriptionTitle;
         Add(StackedCard(Translator.SettingsEmailTemplates_DescriptionTitle, Translator.SettingsEmailTemplates_DescriptionDescription, WinoIconGlyph.Note, descriptionLayout));
 
+        var subjectLayout = Bind.TextField(vm, nameof(vm.TemplateSubject), s => s.TemplateSubject, (s, v) => s.TemplateSubject = v,
+            Translator.SettingsEmailTemplates_SubjectTitle);
+        if (subjectLayout.EditText is { } subjectField) subjectField.ContentDescription = Translator.SettingsEmailTemplates_SubjectTitle;
+        Add(StackedCard(Translator.SettingsEmailTemplates_SubjectTitle, string.Empty, WinoIconGlyph.Mail, subjectLayout));
+
+        var toLayout = Bind.TextField(vm, nameof(vm.TemplateTo), s => s.TemplateTo, (s, v) => s.TemplateTo = v,
+            Translator.SettingsEmailTemplates_ToPlaceholder);
+        if (toLayout.EditText is { } toField) toField.ContentDescription = Translator.SettingsEmailTemplates_ToTitle;
+        Add(StackedCard(Translator.SettingsEmailTemplates_ToTitle, string.Empty, WinoIconGlyph.Person, toLayout));
+
         // ---- Template content ----
         var contentTitle = Text(Translator.SettingsEmailTemplates_ContentTitle, WinoTextStyle.BodyLargeStrong);
         AndroidX.Core.View.ViewCompat.SetAccessibilityHeading(contentTitle, true);

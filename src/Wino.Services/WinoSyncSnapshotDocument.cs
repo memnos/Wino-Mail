@@ -40,6 +40,8 @@ internal sealed class SnapshotTemplate
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string Subject { get; set; } = string.Empty;
+    public string ToAddresses { get; set; } = string.Empty;
     public string HtmlContent { get; set; } = string.Empty;
 }
 

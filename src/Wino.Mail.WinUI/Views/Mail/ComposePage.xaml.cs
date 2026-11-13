@@ -154,6 +154,7 @@ public sealed partial class ComposePage : ComposePageAbstract,
 
         try
         {
+            await ViewModel.ApplyEmailTemplateFieldsAsync(template);
             await EditorSession.RenderHtmlAsync(template.HtmlContent);
             await ViewModel.ReapplySignatureAsync();
         }

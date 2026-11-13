@@ -27,6 +27,12 @@ public partial class CreateEmailTemplatePageViewModel(
     public partial string TemplateDescription { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial string TemplateSubject { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string TemplateTo { get; set; } = string.Empty;
+
+    [ObservableProperty]
     public partial bool IsExistingTemplate { get; set; }
 
     public async Task<string> LoadAsync(object parameter)
@@ -53,6 +59,8 @@ public partial class CreateEmailTemplatePageViewModel(
             IsExistingTemplate = template != null;
             TemplateName = template?.Name ?? string.Empty;
             TemplateDescription = template?.Description ?? string.Empty;
+            TemplateSubject = template?.Subject ?? string.Empty;
+            TemplateTo = template?.ToAddresses ?? string.Empty;
         });
 
         return template?.HtmlContent ?? string.Empty;
@@ -82,6 +90,8 @@ public partial class CreateEmailTemplatePageViewModel(
 
         template.Name = trimmedName;
         template.Description = TemplateDescription?.Trim() ?? string.Empty;
+        template.Subject = TemplateSubject?.Trim() ?? string.Empty;
+        template.ToAddresses = TemplateTo?.Trim() ?? string.Empty;
         template.HtmlContent = htmlContent ?? string.Empty;
 
         if (_editingTemplate == null)

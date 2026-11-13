@@ -1296,6 +1296,62 @@ public partial class ComposePageViewModel : MailBaseViewModel,
             list.Add(new MailboxAddress(item.Name, item.Address));
     }
 
+    /// <summary>
+    /// Applies the template subject and To addresses. An empty field leaves that part of the draft unchanged.
+    /// Addresses already in To are not added again.
+    /// </summary>
+    public async Task ApplyEmailTemplateFieldsAsync(EmailTemplate template)
+    {
+        if (template is null)
+            return;
+
+        var subject = string.IsNullOrWhiteSpace(template.Subject) ? null : template.Subject.Trim();
+        var contacts = new List<AccountContact>();
+
+        foreach (var address in SplitTemplateAddresses(template.ToAddresses))
+        {
+            if (ContainsAddress(contacts, address) || ContainsAddress(ToItems, address))
+                continue;
+
+            var contact = await GetAddressInformationAsync(address, ToItems).ConfigureAwait(false);
+            if (contact is not null)
+                contacts.Add(contact);
+        }
+
+        if (subject is null && contacts.Count == 0)
+            return;
+
+        await ExecuteUIThread(() =>
+        {
+            if (subject is not null)
+                Subject = subject;
+
+            foreach (var contact in contacts)
+                TryAddRecipient(ToItems, contact);
+        }).ConfigureAwait(false);
+    }
+
+    /// <summary>Splits a template recipient list on commas, semicolons and new lines. Text without an @ is ignored.</summary>
+    public static List<string> SplitTemplateAddresses(string raw)
+    {
+        var result = new List<string>();
+        if (string.IsNullOrWhiteSpace(raw))
+            return result;
+
+        foreach (var part in raw.Split([',', ';', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!ComposeRecipientRules.TryParseTyped(part, out var address, out _))
+                continue;
+
+            if (result.Exists(existing => string.Equals(existing, address, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
+            result.Add(address);
+        }
+
+        return result;
+    }
+
     public async Task<AccountContact> GetAddressInformationAsync(string tokenText, ObservableCollection<AccountContact> collection)
     {
         var address = tokenText?.Trim();

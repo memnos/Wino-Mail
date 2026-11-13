@@ -325,8 +325,28 @@ VALUES
         await EnsureLocalTaskListsAsync().ConfigureAwait(false);
     }
 
+    private async Task EnsureEmailTemplateColumnsAsync()
+    {
+        var columns = await Connection.GetTableInfoAsync(nameof(EmailTemplate)).ConfigureAwait(false);
+
+        if (!columns.Any(column => column.Name == nameof(EmailTemplate.Subject)))
+        {
+            await Connection
+                .ExecuteAsync($"ALTER TABLE {nameof(EmailTemplate)} ADD COLUMN {nameof(EmailTemplate.Subject)} TEXT NULL")
+                .ConfigureAwait(false);
+        }
+
+        if (!columns.Any(column => column.Name == nameof(EmailTemplate.ToAddresses)))
+        {
+            await Connection
+                .ExecuteAsync($"ALTER TABLE {nameof(EmailTemplate)} ADD COLUMN {nameof(EmailTemplate.ToAddresses)} TEXT NULL")
+                .ConfigureAwait(false);
+        }
+    }
+
     private async Task EnsureSchemaUpgradesAsync()
     {
+        await EnsureEmailTemplateColumnsAsync().ConfigureAwait(false);
         await EnsureKeyboardShortcutSchemaAsync().ConfigureAwait(false);
         await EnsureWinoAccountSchemaAsync().ConfigureAwait(false);
         await Connection.ExecuteAsync("UPDATE WinoAccount SET DisplayName = Email WHERE DisplayName IS NULL OR DisplayName = ''").ConfigureAwait(false);

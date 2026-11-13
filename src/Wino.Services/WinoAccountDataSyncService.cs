@@ -340,7 +340,14 @@ public sealed class WinoAccountDataSyncService : IWinoAccountDataSyncService
 
         return templates
             .Where(a => !string.IsNullOrWhiteSpace(a.Name))
-            .Select(a => new SnapshotTemplate { Name = a.Name.Trim(), Description = a.Description ?? string.Empty, HtmlContent = a.HtmlContent ?? string.Empty })
+            .Select(a => new SnapshotTemplate
+            {
+                Name = a.Name.Trim(),
+                Description = a.Description ?? string.Empty,
+                Subject = a.Subject ?? string.Empty,
+                ToAddresses = a.ToAddresses ?? string.Empty,
+                HtmlContent = a.HtmlContent ?? string.Empty
+            })
             .ToList();
     }
 
@@ -715,6 +722,8 @@ public sealed class WinoAccountDataSyncService : IWinoAccountDataSyncService
                         Id = Guid.NewGuid(),
                         Name = template.Name.Trim(),
                         Description = template.Description ?? string.Empty,
+                        Subject = template.Subject ?? string.Empty,
+                        ToAddresses = template.ToAddresses ?? string.Empty,
                         HtmlContent = template.HtmlContent ?? string.Empty
                     }).ConfigureAwait(false);
 
@@ -722,10 +731,14 @@ public sealed class WinoAccountDataSyncService : IWinoAccountDataSyncService
                     applied++;
                 }
                 else if (!string.Equals(existing.HtmlContent, template.HtmlContent, StringComparison.Ordinal)
-                    || !string.Equals(existing.Description, template.Description, StringComparison.Ordinal))
+                    || !string.Equals(existing.Description, template.Description, StringComparison.Ordinal)
+                    || !string.Equals(existing.Subject, template.Subject, StringComparison.Ordinal)
+                    || !string.Equals(existing.ToAddresses, template.ToAddresses, StringComparison.Ordinal))
                 {
                     existing.HtmlContent = template.HtmlContent ?? string.Empty;
                     existing.Description = template.Description ?? string.Empty;
+                    existing.Subject = template.Subject ?? string.Empty;
+                    existing.ToAddresses = template.ToAddresses ?? string.Empty;
                     await _templateService.UpdateEmailTemplateAsync(existing).ConfigureAwait(false);
                     applied++;
                 }

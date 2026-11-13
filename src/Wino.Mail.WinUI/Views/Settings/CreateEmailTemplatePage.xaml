@@ -16,6 +16,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -44,7 +46,29 @@
                 Text="{x:Bind ViewModel.TemplateDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </controls:SettingsCard>
 
-        <StackPanel Grid.Row="2" Spacing="8">
+        <controls:SettingsCard
+            Grid.Row="2"
+            AutomationProperties.AutomationId="CreateEmailTemplatePageSubjectCard"
+            Header="{x:Bind domain:Translator.SettingsEmailTemplates_SubjectTitle}"
+            IsClickEnabled="False">
+            <TextBox
+                AutomationProperties.AutomationId="TemplateSubjectTextBox"
+                PlaceholderText="{x:Bind domain:Translator.SettingsEmailTemplates_SubjectTitle}"
+                Text="{x:Bind ViewModel.TemplateSubject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </controls:SettingsCard>
+
+        <controls:SettingsCard
+            Grid.Row="3"
+            AutomationProperties.AutomationId="CreateEmailTemplatePageToCard"
+            Header="{x:Bind domain:Translator.SettingsEmailTemplates_ToTitle}"
+            IsClickEnabled="False">
+            <TextBox
+                AutomationProperties.AutomationId="TemplateToTextBox"
+                PlaceholderText="{x:Bind domain:Translator.SettingsEmailTemplates_ToPlaceholder}"
+                Text="{x:Bind ViewModel.TemplateTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </controls:SettingsCard>
+
+        <StackPanel Grid.Row="4" Spacing="8">
             <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="{x:Bind domain:Translator.SettingsEmailTemplates_ContentTitle}" />
             <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind domain:Translator.SettingsEmailTemplates_ContentDescription}" />
             <mailControls:EditorTabbedCommandBarControl CommandTarget="{x:Bind WebViewEditor}" />
@@ -65,7 +89,7 @@
         </StackPanel>
 
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="5"
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="8">
